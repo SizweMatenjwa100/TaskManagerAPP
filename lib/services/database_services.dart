@@ -31,4 +31,19 @@ Future<void> deleteTodoTask() async{
     return await todoCollection.doc(id).delete();
  }
 
+ //get pending tasks
+Stream<List<Todo>> get todos{
+    return todoCollection.where('uid',isEqualTo:user!.uid).where('completed',isEqualTo:false).snapshots().map(_todoListFromSnapShot);
+ }
+ //get completed tasks
+  <List<Todo>> get completedtodos{
+    return todoCollection.where('uid',isEqualTo:user!.uid).where('completed',isEqualTo:true).snapshots().map(_todoListFromSnapShot);
+  }
+
+  List<Todo> _todoListFromSnapshot(QuerySnapshot snapshot){
+    return snapshot.docs.map((doc){
+      return Todo(id:doc.id, title: doc[title], description:doc['description'] ?? '', doc['completed'] ?? false: completed,timestamp:doc['createdAt'] ?? ''),
+    }).toList();
+  }
+
 }
